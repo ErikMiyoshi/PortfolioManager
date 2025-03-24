@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'portfolio/style.css' %}">
+
+        {% block head %}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="topnav">
+            <a class="active" href="{% url 'home' %}">Home</a>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Log Out</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <button type="submit">Log In</button>
+                </form>
+                <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </div>
+
+        <h1>Welcome to Portfolio Manager Website!</h1>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
