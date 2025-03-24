@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <table>
+        <thead>
+            <tr>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Costs</th>
+                <th>Date</th>
+                <th>Broker</th>
+                <th>Desc</th>
+                <th>Currency</th>
+                <th>User</th>
+                <th>Exp Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in transactions %}
+                <tr>
+                    <td>{{ entry.asset }}</td>
+                    <td>{{ entry.transaction_type }}</td>
+                    <td>{{ entry.quantity }}</td>
+                    <td>{{ entry.price_per_unit }}</td>
+                    <td>{{ entry.costs }}</td>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.broker }}</td>
+                    <td>{{ entry.description }}</td>
+                    <td>{{ entry.currency_type }}</td>
+                    <td>{{ entry.user }}</td>
+                    <td>{{ entry.expire_date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

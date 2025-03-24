@@ -4,33 +4,30 @@
     <table>
         <thead>
             <tr>
+                <th>Portfolio</th>
                 <th>Asset</th>
-                <th>Type</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Costs</th>
-                <th>Date</th>
-                <th>Broker</th>
-                <th>Desc</th>
-                <th>Currency</th>
-                <th>User</th>
-                <th>Exp Date</th>
+                <th>Asset_Type</th>
+                <th>Average Price</th>
+                <th>Total Profit</th>
+                <th>Quantity</th>
+                <th>Total Cost</th>
+                
             </tr>
         </thead>
         <tbody>
-            {% for entry in transactions %}
+            {% for entry in assets %}
                 <tr>
-                    <td>{{ entry.asset }}</td>
-                    <td>{{ entry.transaction_type }}</td>
-                    <td>{{ entry.quantity }}</td>
-                    <td>{{ entry.price_per_unit }}</td>
-                    <td>{{ entry.costs }}</td>
-                    <td>{{ entry.date }}</td>
-                    <td>{{ entry.broker }}</td>
-                    <td>{{ entry.description }}</td>
-                    <td>{{ entry.currency_type }}</td>
-                    <td>{{ entry.user }}</td>
-                    <td>{{ entry.expire_date }}</td>
+                    <td>{{ entry.portfolio.name }}</td>
+                    <td>{{ entry.symbol }}</td>
+                    <td>{{ entry.asset_type }}</td>
+                    {% for key, value in value_dict.items %}
+                        {% if entry == key %}
+                            <td>{{ value.current_average_price|floatformat:5 }}</td>
+                            <td>{{ value.total_profit|floatformat:5 }}</td>
+                            <td>{{ value.current_quantity }}</td>
+                            <td>{{ value.total_cost|floatformat:5 }}</td>  
+                        {% endif %}
+                    {% endfor %}
                 </tr>
             {% endfor %}
         </tbody>

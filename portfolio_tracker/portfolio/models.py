@@ -49,16 +49,44 @@ class Asset(models.Model):
     def __str__(self):
         return f"{self.name} ({self.symbol})"
     
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     asset_type = cleaned_data["asset_type"]
-
-    #     if asset_type == "fixed_income BR" or asset_type == "savings" or asset_type == "long_time_inv" or asset_type == "emergency_fund":
-    #         self.Fields['rate'].required = True
-    #         self.Fields['rate_type'].required = True
-    #     else:
-    #         self.Fields['rate'].required = False
-    #         self.Fields['rate_type'].required = False
+    def average_price(self):
+        transactions = self.transaction_set.order_by("date")
+        total_cost = 0
+        total_cost_wo_taxes = 0
+        current_quantity = 0
+        current_average_price = 0
+        total_profit = 0
+        for transaction in transactions:
+            print(f'current_quantity {current_quantity} transaction.quantity {transaction.quantity} current_average_price {current_average_price} "transaction.price_per_unit" {transaction.price_per_unit}')
+            if transaction.transaction_type == "buy":
+                current_quantity += transaction.quantity
+                total_cost_wo_taxes += transaction.quantity * transaction.price_per_unit
+                total_cost = total_cost_wo_taxes + transaction.costs
+                current_average_price = total_cost/current_quantity
+            elif transaction.transaction_type == "sell":
+                if current_quantity - transaction.quantity == 0:
+                    current_quantity = 0
+                    total_profit += (transaction.price_per_unit - current_average_price)*transaction.quantity
+                    print(f'profit: {total_profit}')
+                    total_cost_wo_taxes = 0
+                    total_cost = 0
+                    current_average_price = 0
+                else:
+                    total_profit += (transaction.price_per_unit - current_average_price)*transaction.quantity
+                    print(f'profit: {total_profit}')
+                    current_quantity = current_quantity - transaction.quantity
+                    total_cost_wo_taxes = current_average_price*(current_quantity)
+                    total_cost = total_cost_wo_taxes - transaction.costs
+                    
+        current_values = {
+            "current_average_price": current_average_price,
+            "current_quantity": current_quantity,
+            "total_cost": total_cost,
+            "total_cost_wo_taxes": total_cost_wo_taxes,
+            "total_profit": total_profit,
+        }
+        return current_values
+        
 
 class Transaction(models.Model):
     TRANSACTION_TYPES = [
@@ -85,3 +113,9 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.transaction_type.upper()} {self.quantity} {self.asset.symbol} @ {self.price_per_unit}"
+    
+    #todo: Revise, not working as expect
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['asset', 'transaction_type', 'quantity', 'price_per_unit','date'], name='unique_asset_transaction_type_quantity_price_per_unit_date')
+        ]
